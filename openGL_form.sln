@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openGL_form", "openGL_form\openGL_form.csproj", "{9FD856B6-620F-4FAE-BC74-EEE1E0EBF215}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3d_obj_DrawForm", "..\3d_obj_DrawForm\3d_obj_DrawForm\3d_obj_DrawForm.csproj", "{2484B034-9D27-4169-B485-EBFE6F22B0F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3d_obj_DrawForm", "3d_obj_DrawForm\3d_obj_DrawForm.csproj", "{2484B034-9D27-4169-B485-EBFE6F22B0F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

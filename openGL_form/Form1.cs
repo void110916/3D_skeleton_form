@@ -14,6 +14,7 @@ using System.Windows.Forms.Integration;
 
 
 
+
 namespace openGL_form
 {
     public partial class Form1 : Form
@@ -21,51 +22,15 @@ namespace openGL_form
         public Form1()
         {
             InitializeComponent();
-            _3d_obj_DrawForm.UserControl1 uc =
-               new _3d_obj_DrawForm.UserControl1();
-
-
-            //uc.UserControl1_resize(this.Size.Height, this.Size.Height);
-        }
-        ElementHost host = new ElementHost();
-        public void opengl_ini()
-        {
-            
-        }
-
-        private void glControl1_Load(object sender, EventArgs e)
-        {
-            ModelVisual3D model = new ModelVisual3D();
-            MeshGeometry3D mesh = new MeshGeometry3D();
-            mesh.Clone();
 
         }
-        ElementHost h = new ElementHost();
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            //ElementHost host = new ElementHost();
-            //_3d_obj_DrawForm.UserControl1 uc =
-            //    new _3d_obj_DrawForm.UserControl1();
+        //Skeleton people;
+       
 
-            //host.Child = uc;
+        
+        
+        
 
-
-            //this.Controls.Add(host);
-            _3d_obj_DrawForm.UserControl1 uc =
-               new _3d_obj_DrawForm.UserControl1();
-           
-
-            //uc.UserControl1_resize(this.Size.Height, this.Size.Height);
-        }
-
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-            _3d_obj_DrawForm.UserControl1 uc =
-                new _3d_obj_DrawForm.UserControl1();
-            //uc.Width = host.Size.Height;
-            //uc.Height = host.Size.Height;
-            
-            
-        }
+        
     }
 }
