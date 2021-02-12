@@ -29,18 +29,13 @@ namespace _3d_obj_DrawForm
             //our_Model = model.group;
         }
 Model model = new Model();
-        public Model3D our_Model { get; set; }
-        private void myViewport_Initialized(object sender, EventArgs e)
-        {
-            //Model model = new Model();
-            //our_Model = model.group;
-            
-            
-        }
+        
+        
 
         private void m_helix_viewport_Initialized(object sender, EventArgs e)
         {
             m_helix_viewport.Children.Add(new ModelVisual3D { Content = model.group });
+            
         }
     }
 }

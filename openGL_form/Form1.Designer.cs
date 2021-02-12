@@ -50,7 +50,6 @@
             this.Controls.Add(this.elementHost1);
             this.Name = "Form1";
             this.Text = "Form1";
-
             this.ResumeLayout(false);
 
         }
@@ -58,7 +57,7 @@
         #endregion
 
         private System.Windows.Forms.Integration.ElementHost elementHost1;
-        public _3d_obj_DrawForm.UserControl1 UserControl1;
+        private _3d_obj_DrawForm.UserControl1 UserControl1;
     }
 }
 
