@@ -124,3 +124,7 @@ packages/System.Numerics.Vectors.4.5.0/useSharedDesignerContext.txt
 packages/System.Numerics.Vectors.4.5.0/version.txt
 3d_obj_DrawForm/bin/Debug/System.Numerics.Vectors.xml
 openGL_form/bin/Debug/System.Numerics.Vectors.xml
+packages/
+openGL_form/bin/
+3d_obj_DrawForm/bin/Debug/Cyotek.Drawing.BitmapFont.dll
+3d_obj_DrawForm/bin/

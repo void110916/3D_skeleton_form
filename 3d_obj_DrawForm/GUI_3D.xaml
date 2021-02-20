@@ -14,15 +14,22 @@
                 Content="Model: Cone"/-->
 
 
-        
+
 
         <!-- The HelixViewport3D supports camera manipulation, and can be used just like the Viewport3D -->
-        <HelixToolkit:HelixViewport3D ZoomExtentsWhenLoaded="True" Margin="0,0,0,0" Name="m_helix_viewport" Initialized="m_helix_viewport_Initialized">
-
-            <!-- Remember to add light to the scene -->
+        <HelixToolkit:HelixViewport3D  ZoomExtentsWhenLoaded="False" Margin="0,0,0,0" Name="m_helix_viewport" Initialized="m_helix_viewport_Initialized" ShowCoordinateSystem="True" ShowFrameRate="True" ShowCameraTarget="False" ShowCameraInfo="True" LimitFPS="False">
             <HelixToolkit:SunLight/>
-
             
+            <HelixToolkit:GridLinesVisual3D Thickness="0.01" MinorDistance="0.9" MajorDistance="1" Normal="0,1,0"/>
+            <!-- Remember to add light to the scene -->
+            <HelixToolkit:HelixViewport3D.DefaultCamera>
+                <PerspectiveCamera Position="6,9,15" LookDirection="-2,-3,-5" UpDirection="0,1,0"/>
+            </HelixToolkit:HelixViewport3D.DefaultCamera>
+            <HelixToolkit:HelixViewport3D.Camera>
+                <PerspectiveCamera Position="8,12,20" LookDirection="-2,-3,-5" UpDirection="0,1,0" />
+            </HelixToolkit:HelixViewport3D.Camera>
+            
+
 
         </HelixToolkit:HelixViewport3D>
 

@@ -18,10 +18,11 @@ namespace _3d_obj_DrawForm
             group.Children.Add(getSphereModel(root));
             for (int i = 1; i < skeleton.m_pBoneList.Count; i++)
             {
-                
-                group.Children.Add(getCylinder(skeleton.m_pBoneList[i].coordinate_dir,skeleton.m_pBoneList[i].parent.coordinate_dir ));
-                group.Children.Add(getSphereModel(skeleton.m_pBoneList[i].coordinate_dir));
+
+                group.Children.Add(getCylinder(skeleton.m_pBoneList[i].coordinate_dir.ToPoint3D(), skeleton.m_pBoneList[i].parent.coordinate_dir.ToPoint3D()));
+                group.Children.Add(getSphereModel(skeleton.m_pBoneList[i].coordinate_dir.ToPoint3D()));
             }
+
 
         }
         public Model3DGroup group = new Model3DGroup();
@@ -37,6 +38,7 @@ namespace _3d_obj_DrawForm
             MeshBuilder builder = new MeshBuilder();
             builder.AddCylinder(cylinderP1, cylinderP2, diameter, Div);
             GeometryModel3D mod = new GeometryModel3D(builder.ToMesh(), Materials.Gray);
+            //mod.SetName();
             return mod;
         }
     }

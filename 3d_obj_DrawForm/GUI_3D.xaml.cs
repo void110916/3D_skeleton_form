@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
 
+
 namespace _3d_obj_DrawForm
 {
     /// <summary>
@@ -25,17 +26,21 @@ namespace _3d_obj_DrawForm
         public UserControl1()
         {
             InitializeComponent();
-            
-            //our_Model = model.group;
+
+
         }
-Model model = new Model();
-        
-        
+        Model model = new Model();
 
         private void m_helix_viewport_Initialized(object sender, EventArgs e)
         {
-            m_helix_viewport.Children.Add(new ModelVisual3D { Content = model.group });
+            var visual = new ModelVisual3D { Content = model.group };
+
+            m_helix_viewport.Children.Add(visual);
+            m_helix_viewport.CameraMode = CameraMode.Inspect;
+            var zoomBound = model.group.Bounds;
             
+            m_helix_viewport.ZoomExtents(zoomBound);
+            //m_helix_viewport.Camera.Position = new Point3D(6d, 9d, 15d);
         }
     }
 }
