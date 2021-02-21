@@ -11,16 +11,17 @@ namespace _3d_obj_DrawForm
     class Model
     {
         private static Point3D root { get { return new Point3D(0, 0, 0); } }
+        Human.Skeleton skeleton;
 
         public Model()
         {
-            Human.Skeleton skeleton = new Human.Skeleton(@"C:\Users\void\Downloads\mocapPlayer\07-walk.asf", 0.2f);
+            skeleton = new Human.Skeleton(@"C:\Users\void\Downloads\mocapPlayer\07-walk.asf", 0.2f);
             group.Children.Add(getSphereModel(root));
             for (int i = 1; i < skeleton.m_pBoneList.Count; i++)
             {
-
-                group.Children.Add(getCylinder(skeleton.m_pBoneList[i].coordinate_dir.ToPoint3D(), skeleton.m_pBoneList[i].parent.coordinate_dir.ToPoint3D()));
-                group.Children.Add(getSphereModel(skeleton.m_pBoneList[i].coordinate_dir.ToPoint3D()));
+                skeleton.compute_coordinate_point(skeleton.m_pBoneList[i]);
+                group.Children.Add(getCylinder(skeleton.m_pBoneList[i].coordinate_dir, skeleton.m_pBoneList[i].parent.coordinate_dir));
+                group.Children.Add(getSphereModel(skeleton.m_pBoneList[i].coordinate_dir));
             }
 
 

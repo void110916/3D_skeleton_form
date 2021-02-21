@@ -22,9 +22,7 @@
             
             <HelixToolkit:GridLinesVisual3D Thickness="0.01" MinorDistance="0.9" MajorDistance="1" Normal="0,1,0"/>
             <!-- Remember to add light to the scene -->
-            <HelixToolkit:HelixViewport3D.DefaultCamera>
-                <PerspectiveCamera Position="6,9,15" LookDirection="-2,-3,-5" UpDirection="0,1,0"/>
-            </HelixToolkit:HelixViewport3D.DefaultCamera>
+            
             <HelixToolkit:HelixViewport3D.Camera>
                 <PerspectiveCamera Position="8,12,20" LookDirection="-2,-3,-5" UpDirection="0,1,0" />
             </HelixToolkit:HelixViewport3D.Camera>

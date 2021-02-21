@@ -13,28 +13,29 @@ namespace Human
         /// <summary>
         /// Root position (x, y, z)
         /// </summary>
-        public Vector3 root_pos;
+        public Vector3D root_pos;
         /// <summary>
         /// Euler angles (thetax, thetay, thetaz) of all bones in their local coordinate system.
         /// If a particular bone does not have a certain degree of freedom, 
         /// the corresponding rotation is set to 0.
         /// The order of the bones in the array corresponds to their ids in .ASf file: root, lhipjoint, lfemur, ...
         /// </summary>
-        public Vector3[] bone_rotation;
+        public Vector3D[] bone_rotation;
         /// <summary>
         /// bones that are translated relative to parents (resulting in gaps) (rarely used)
         /// </summary>
-        public Vector3[] bone_translation;
+        public Vector3D[] bone_translation;
         /// <summary>
         /// bones that change length during the motion (rarely used)
         /// </summary>
-        public Vector3[] bone_length;
+        public Vector3D[] bone_length;
         public Posture(int MAX_BONE_NUM)
         {
-            bone_rotation = new Vector3[MAX_BONE_NUM];
-            bone_length = new Vector3[MAX_BONE_NUM];
-            bone_translation = new Vector3[MAX_BONE_NUM];
-            root_pos = new Vector3(0f, 0f, 0f);
+            bone_rotation = new Vector3D[MAX_BONE_NUM];
+            bone_length = new Vector3D[MAX_BONE_NUM];
+            bone_translation = new Vector3D[MAX_BONE_NUM];
+            root_pos = new Vector3D(0f, 0f, 0f);
+
         }
     }
     class Bone
@@ -50,7 +51,7 @@ namespace Human
         public Vector3 dir; // Unit vector describes the direction from local origin to 
                             // the origin of the child bone 
                             // Notice: stored in local coordinate system of the bone
-        public Vector3 coordinate_dir;
+        public Point3D coordinate_dir;
         public float length; // bone length
         public double angle_x, angle_y, angle_z; // orientation of each bone's local coordinate 
                                                  // system as specified in ASF file (axis field)
@@ -81,7 +82,7 @@ namespace Human
             this.dofrx = this.dofry = this.dofrz = false;
             this.doftx = this.dofty = this.doftz = false;
             this.doftl = false;
-            this.dir = new Vector3(0f);
+            this.dir = new Vector3();
             this.dofo = new int[8];
         }
         public void initialize()
@@ -90,7 +91,7 @@ namespace Human
             this.dofrx = this.dofry = this.dofrz = false;
             this.doftx = this.dofty = this.doftz = false;
             this.doftl = false;
-            this.dir = new Vector3(0f);
+            this.dir = new Vector3();
             this.dofo = new int[8];
 
         }
@@ -102,7 +103,7 @@ namespace Human
         //root position in world coordinate system
         //  start
         //private double[] m_RootPos = new double[3];
-        public Vector3 transmit;
+        public Vector3D transmit;
         //private double rx, ry, rz;
         //  end
         /// <summary>
@@ -172,7 +173,7 @@ namespace Human
                 line = f.ReadLine();
             } while (!line.Equals(":bonedata"));
             bool done = false;
-            
+
             for (int i = 1; (!done); i++)
             {
                 NUM_BONES_IN_FILE++;
@@ -310,16 +311,18 @@ namespace Human
         /// to the coordinate system of its parent
         /// </summary>
         /// <param name="child"></param>
-        public Vector3 compute_coordinate_point(Bone parent_of_child, Bone child)
+        public void compute_coordinate_point(Bone child)
         {
             Vector3 vector;
+
+            var parent_of_child = child.parent;
             vector = Vector3.Add(parent_of_child.dir * parent_of_child.length, child.dir * child.length);
             while (parent_of_child.parent != null)
             {
                 parent_of_child = parent_of_child.parent;
                 vector = Vector3.Add(parent_of_child.dir * parent_of_child.length, vector);
             }
-            return vector;
+            child.coordinate_dir = new Point3D(vector.X, vector.Y, vector.Z);
         }
 
         /// <summary>
