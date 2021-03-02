@@ -33,14 +33,20 @@ namespace _3d_obj_DrawForm
 
         private void m_helix_viewport_Initialized(object sender, EventArgs e)
         {
-            var visual = new ModelVisual3D { Content = model.group };
+            var visual = new ModelVisual3D { Content = model.m_group };
 
             m_helix_viewport.Children.Add(visual);
             m_helix_viewport.CameraMode = CameraMode.Inspect;
-            var zoomBound = model.group.Bounds;
+            var zoomBound = model.m_group.Bounds;
             
             m_helix_viewport.ZoomExtents(zoomBound);
+            CompositionTarget.Rendering += viewport_render;
+            
             //m_helix_viewport.Camera.Position = new Point3D(6d, 9d, 15d);
+        }
+        public void viewport_render(object sender,EventArgs e)
+        {
+            
         }
     }
 }

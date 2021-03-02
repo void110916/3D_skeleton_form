@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using System.Numerics;
 using System.Windows.Media.Media3D;
 namespace Human
 {
@@ -29,13 +28,14 @@ namespace Human
         /// bones that change length during the motion (rarely used)
         /// </summary>
         public Vector3D[] bone_length;
+        public static List<Bone> m_pBone;
         public Posture(int MAX_BONE_NUM)
         {
             bone_rotation = new Vector3D[MAX_BONE_NUM];
             bone_length = new Vector3D[MAX_BONE_NUM];
             bone_translation = new Vector3D[MAX_BONE_NUM];
             root_pos = new Vector3D(0f, 0f, 0f);
-
+            m_pBone = new List<Bone>(MAX_BONE_NUM);
         }
     }
     class Bone
@@ -48,7 +48,7 @@ namespace Human
         public Bone sibling;
         public Bone child; // Pointer to the child (outboard bone) in the hierarchy tree 
         public int idx; // Bone index
-        public Vector3 dir; // Unit vector describes the direction from local origin to 
+        public Vector3D dir; // Unit vector describes the direction from local origin to 
                             // the origin of the child bone 
                             // Notice: stored in local coordinate system of the bone
         public Point3D coordinate_dir;
@@ -61,7 +61,11 @@ namespace Human
         public bool doftx, dofty, doftz; // translational degree of freedom mask in x, y, z axis
         public bool doftl;
         // dofrx=1 if this bone has x rotational degree of freedom, otherwise dofrx=0.
-        public float rx, ry, rz;
+        //public float rx, ry, rz;
+        
+        public Transform3DGroup transform;
+        public Transform3DGroup translate;
+        public Transform3DGroup rotate;
         public string name;
         /// <summary>
         ///rotation matrix from the local coordinate of this bone to the local coordinate system of it's parent
@@ -82,7 +86,7 @@ namespace Human
             this.dofrx = this.dofry = this.dofrz = false;
             this.doftx = this.dofty = this.doftz = false;
             this.doftl = false;
-            this.dir = new Vector3();
+            this.dir = new Vector3D();
             this.dofo = new int[8];
         }
         public void initialize()
@@ -91,7 +95,7 @@ namespace Human
             this.dofrx = this.dofry = this.dofrz = false;
             this.doftx = this.dofty = this.doftz = false;
             this.doftl = false;
-            this.dir = new Vector3();
+            this.dir = new Vector3D();
             this.dofo = new int[8];
 
         }
@@ -129,7 +133,7 @@ namespace Human
                 if (!m_pBoneList[i].dofrx)
                 {
                     m_pBoneList[i].dofrx = true;
-                    m_pBoneList[i].rx = 0f;
+                    //m_pBoneList[i].rx = 0f;
                     m_pBoneList[i].dof++;
                     m_pBoneList[i].dofo[m_pBoneList[i].dof - 1] = 2;
                     m_pBoneList[i].dofo[m_pBoneList[i].dof] = 0;
@@ -137,7 +141,7 @@ namespace Human
                 if (!m_pBoneList[i].dofry)
                 {
                     m_pBoneList[i].dofry = true;
-                    m_pBoneList[i].ry = 0.0f;
+                    //m_pBoneList[i].ry = 0.0f;
                     m_pBoneList[i].dof++;
                     m_pBoneList[i].dofo[m_pBoneList[i].dof - 1] = 2;
                     m_pBoneList[i].dofo[m_pBoneList[i].dof] = 0;
@@ -146,7 +150,7 @@ namespace Human
                 if (!m_pBoneList[i].dofrz)
                 {
                     m_pBoneList[i].dofrz = true;
-                    m_pBoneList[i].rz = 0.0f;
+                    //m_pBoneList[i].rz = 0.0f;
                     m_pBoneList[i].dof++;
                     m_pBoneList[i].dofo[m_pBoneList[i].dof - 1] = 3;
                     m_pBoneList[i].dofo[m_pBoneList[i].dof] = 0;
@@ -205,7 +209,7 @@ namespace Human
                     }
                     if (block[0] == "direction")
                     {
-                        Vector3 dir = new Vector3(float.Parse(block[1]), float.Parse(block[2]), float.Parse(block[3]));
+                        Vector3D dir = new Vector3D(double.Parse(block[1]), double.Parse(block[2]), double.Parse(block[3]));
                         bone.dir = dir;
                     }
                     if (block[0] == "length")
@@ -313,14 +317,14 @@ namespace Human
         /// <param name="child"></param>
         public void compute_coordinate_point(Bone child)
         {
-            Vector3 vector;
+            Vector3D vector;
 
             var parent_of_child = child.parent;
-            vector = Vector3.Add(parent_of_child.dir * parent_of_child.length, child.dir * child.length);
+            vector = Vector3D.Add(parent_of_child.dir * parent_of_child.length, child.dir * child.length);
             while (parent_of_child.parent != null)
             {
                 parent_of_child = parent_of_child.parent;
-                vector = Vector3.Add(parent_of_child.dir * parent_of_child.length, vector);
+                vector = Vector3D.Add(parent_of_child.dir * parent_of_child.length, vector);
             }
             child.coordinate_dir = new Point3D(vector.X, vector.Y, vector.Z);
         }
@@ -353,7 +357,7 @@ namespace Human
             root.idx = rootBoneIndex;
             root.parent = null;
             root.child = null;
-            Vector3 dir = new Vector3(0f, 0f, 0f);
+            Vector3D dir = new Vector3D(0d, 0d, 0d);
             root.dir = dir;
             root.angle_x = 0d; root.angle_y = 0d; root.angle_z = 0d;
             root.length = 0.05f;
@@ -380,7 +384,9 @@ namespace Human
     {
         protected int m_NumFrames;
         Skeleton pSkeleton;
-        List<Posture> m_pPostures;
+        public List<Posture> m_pPostures;
+        
+        public int MOV_BONES { get; private set; }
         protected void readAMCfile(string AMCname, float scale)
         {
             List<Bone> bone;
@@ -388,6 +394,7 @@ namespace Human
             int n = 0;
             int numbones = pSkeleton.m_pBoneList.Count;
             int movbones = numbones - 2;
+            MOV_BONES = movbones;
             StreamReader f = new StreamReader(AMCname, Encoding.UTF8);
             while (!f.EndOfStream)
             {
@@ -418,7 +425,8 @@ namespace Human
                 {
                     var line = f.ReadLine().Split();
                     int bone_idx = pSkeleton.m_pBoneList.FindIndex(b => b.name == line[0]);
-
+                    if (i==0)
+                        Posture.m_pBone.Add( pSkeleton.m_pBoneList[bone_idx]);
                     pose.bone_rotation[bone_idx].X = pose.bone_rotation[bone_idx].Y = pose.bone_rotation[bone_idx].Z = 0;
                     for (int x = 0; x < pSkeleton.m_pBoneList[bone_idx].dof; x++)
                     {
