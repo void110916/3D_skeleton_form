@@ -85,6 +85,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TreeNode.cs" />
     <Page Include="GUI_3D.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

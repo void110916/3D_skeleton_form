@@ -34,7 +34,7 @@ namespace _3d_obj_DrawForm
         private void m_helix_viewport_Initialized(object sender, EventArgs e)
         {
             var visual = new ModelVisual3D { Content = model.m_group };
-
+            
             m_helix_viewport.Children.Add(visual);
             m_helix_viewport.CameraMode = CameraMode.Inspect;
             var zoomBound = model.m_group.Bounds;

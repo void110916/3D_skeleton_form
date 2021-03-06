@@ -35,7 +35,7 @@ namespace Human
             bone_length = new Vector3D[MAX_BONE_NUM];
             bone_translation = new Vector3D[MAX_BONE_NUM];
             root_pos = new Vector3D(0f, 0f, 0f);
-            m_pBone = new List<Bone>(MAX_BONE_NUM);
+            //m_pBone = new List<Bone>(MAX_BONE_NUM);
         }
     }
     class Bone
@@ -44,28 +44,30 @@ namespace Human
         /// <summary>
         /// the sibling (branch bone) in the hierarchy tree
         /// </summary>
-        public Bone parent;
-        public Bone sibling;
-        public Bone child; // Pointer to the child (outboard bone) in the hierarchy tree 
+        //public Bone parent;
+        //public Bone sibling;
+        //public Bone child; // Pointer to the child (outboard bone) in the hierarchy tree 
         public int idx; // Bone index
+        public int? frame_idx;
         public Vector3D dir; // Unit vector describes the direction from local origin to 
-                            // the origin of the child bone 
-                            // Notice: stored in local coordinate system of the bone
+                             // the origin of the child bone 
+                             // Notice: stored in local coordinate system of the bone
         public Point3D coordinate_dir;
         public float length; // bone length
         public double angle_x, angle_y, angle_z; // orientation of each bone's local coordinate 
                                                  // system as specified in ASF file (axis field)
-        public double aspx, aspy; // aspect ratio of bone shape
+                                                 //public double aspx, aspy; // aspect ratio of bone shape
         public int dof; // number of bone's degrees of freedom 
         public bool dofrx, dofry, dofrz; // rotational degree of freedom mask in x, y, z axis 
         public bool doftx, dofty, doftz; // translational degree of freedom mask in x, y, z axis
         public bool doftl;
         // dofrx=1 if this bone has x rotational degree of freedom, otherwise dofrx=0.
         //public float rx, ry, rz;
-        
+
         public Transform3DGroup transform;
         public Transform3DGroup translate;
         public Transform3DGroup rotate;
+        public Model3DGroup model;
         public string name;
         /// <summary>
         ///rotation matrix from the local coordinate of this bone to the local coordinate system of it's parent
@@ -88,6 +90,10 @@ namespace Human
             this.doftl = false;
             this.dir = new Vector3D();
             this.dofo = new int[8];
+            this.model = new Model3DGroup();
+            this.rotate = new Transform3DGroup();
+            this.transform = new Transform3DGroup();
+            this.translate = new Transform3DGroup();
         }
         public void initialize()
         {
@@ -97,13 +103,16 @@ namespace Human
             this.doftl = false;
             this.dir = new Vector3D();
             this.dofo = new int[8];
-
+            this.model = new Model3DGroup();
+            this.rotate = new Transform3DGroup();
+            this.transform = new Transform3DGroup();
+            this.translate = new Transform3DGroup();
         }
     }
 
     class Skeleton : Exception
     {
-        public Bone rootBone { get { return m_pBoneList[0]; } }
+        public Bone rootBone { get { return m_pBoneList[0].data; } }
         //root position in world coordinate system
         //  start
         //private double[] m_RootPos = new double[3];
@@ -113,7 +122,7 @@ namespace Human
         /// <summary>
         /// Array with all skeleton bones
         /// </summary>
-        public List<Bone> m_pBoneList;
+        public List<TreeNode<Bone>> m_pBoneList;
         /// <summary>
         /// to the root bone
         /// </summary>
@@ -128,46 +137,46 @@ namespace Human
         {
             for (int i = 0; i < m_pBoneList.Count; i++)
             {
-                if (m_pBoneList[i].dof == 0)
+                if (m_pBoneList[i].data.dof == 0)
                     continue;
-                if (!m_pBoneList[i].dofrx)
+                if (!m_pBoneList[i].data.dofrx)
                 {
-                    m_pBoneList[i].dofrx = true;
-                    //m_pBoneList[i].rx = 0f;
-                    m_pBoneList[i].dof++;
-                    m_pBoneList[i].dofo[m_pBoneList[i].dof - 1] = 2;
-                    m_pBoneList[i].dofo[m_pBoneList[i].dof] = 0;
+                    m_pBoneList[i].data.dofrx = true;
+                    //m_pBoneList[i].data.rx = 0f;
+                    m_pBoneList[i].data.dof++;
+                    m_pBoneList[i].data.dofo[m_pBoneList[i].data.dof - 1] = 2;
+                    m_pBoneList[i].data.dofo[m_pBoneList[i].data.dof] = 0;
                 }
-                if (!m_pBoneList[i].dofry)
+                if (!m_pBoneList[i].data.dofry)
                 {
-                    m_pBoneList[i].dofry = true;
-                    //m_pBoneList[i].ry = 0.0f;
-                    m_pBoneList[i].dof++;
-                    m_pBoneList[i].dofo[m_pBoneList[i].dof - 1] = 2;
-                    m_pBoneList[i].dofo[m_pBoneList[i].dof] = 0;
+                    m_pBoneList[i].data.dofry = true;
+                    //m_pBoneList[i].data.ry = 0.0f;
+                    m_pBoneList[i].data.dof++;
+                    m_pBoneList[i].data.dofo[m_pBoneList[i].data.dof - 1] = 2;
+                    m_pBoneList[i].data.dofo[m_pBoneList[i].data.dof] = 0;
                 }
 
-                if (!m_pBoneList[i].dofrz)
+                if (!m_pBoneList[i].data.dofrz)
                 {
-                    m_pBoneList[i].dofrz = true;
-                    //m_pBoneList[i].rz = 0.0f;
-                    m_pBoneList[i].dof++;
-                    m_pBoneList[i].dofo[m_pBoneList[i].dof - 1] = 3;
-                    m_pBoneList[i].dofo[m_pBoneList[i].dof] = 0;
+                    m_pBoneList[i].data.dofrz = true;
+                    //m_pBoneList[i].data.rz = 0.0f;
+                    m_pBoneList[i].data.dof++;
+                    m_pBoneList[i].data.dofo[m_pBoneList[i].data.dof - 1] = 3;
+                    m_pBoneList[i].data.dofo[m_pBoneList[i].data.dof] = 0;
                 }
             }
         }
-        public void set_bone_shape(Bone[] bones)
-        {
-            for (int i = 0; i < bones.Length; i++)
-            {
-                bones[i].aspx = 0.25;
-                bones[i].aspy = 0.25;
-            }
+        //public void set_bone_shape(Bone[] bones)
+        //{
+        //    for (int i = 0; i < bones.Length; i++)
+        //    {
+        //        bones[i].aspx = 0.25;
+        //        bones[i].aspy = 0.25;
+        //    }
 
-            bones[rootBoneIndex].aspx = 1;
-            bones[rootBoneIndex].aspy = 1;
-        }
+        //    bones[rootBoneIndex].aspx = 1;
+        //    bones[rootBoneIndex].aspy = 1;
+        //}
         private void readASFFile(string asf_filename, float scale)
         {
             StreamReader f = new StreamReader(asf_filename, Encoding.UTF8);
@@ -190,7 +199,7 @@ namespace Human
                     string[] block = line.Split(' ');
                     if (block[0] == "end")
                     {
-                        m_pBoneList.Add(bone);
+                        m_pBoneList.Add(new TreeNode<Bone>(bone));
                         break;
                     }
                     if (block[0] == ":hierarchy")
@@ -283,26 +292,13 @@ namespace Human
                 else
                 {
                     var block = line.Split(' ');
-                    Bone parent = m_pBoneList.Find(b => b.name == block[0]);
+                    var parent = m_pBoneList.Find(b => b.data.name == block[0]);
                     //Bone parent = Array.Find(m_pBoneList, b => b.name == block[0]);
                     for (int k = 1; k < block.Length; k++)
                     {
-                        Bone child = m_pBoneList.Find(b => b.name == block[k]);
+                        var child = m_pBoneList.Find(b => b.data.name == block[k]);
                         //Bone child = Array.Find(m_pBoneList, b => b.name == block[k]);
-                        child.parent = parent;
-                        if (parent.child is null)
-                            parent.child = child;
-                        else
-                        {
-                            Bone sibling = parent.child;
-
-                            while (sibling.sibling != null)
-                            {
-                                sibling = sibling.sibling;
-                            }
-                            sibling.sibling = child;
-                            sibling.parent = parent;
-                        }
+                        child.AddParent(parent);
 
                     }
                 }
@@ -315,18 +311,18 @@ namespace Human
         /// to the coordinate system of its parent
         /// </summary>
         /// <param name="child"></param>
-        public void compute_coordinate_point(Bone child)
+        public void compute_coordinate_point(TreeNode<Bone> child)
         {
             Vector3D vector;
 
-            var parent_of_child = child.parent;
-            vector = Vector3D.Add(parent_of_child.dir * parent_of_child.length, child.dir * child.length);
-            while (parent_of_child.parent != null)
+            var parent_of_child = child.GetParent;
+            vector = Vector3D.Add(parent_of_child.data.dir * parent_of_child.data.length, child.data.dir * child.data.length);
+            while (parent_of_child.GetParent != null)
             {
-                parent_of_child = parent_of_child.parent;
-                vector = Vector3D.Add(parent_of_child.dir * parent_of_child.length, vector);
+                parent_of_child = parent_of_child.GetParent;
+                vector = Vector3D.Add(parent_of_child.data.dir * parent_of_child.data.length, vector);
             }
-            child.coordinate_dir = new Point3D(vector.X, vector.Y, vector.Z);
+            child.data.coordinate_dir = new Point3D(vector.X, vector.Y, vector.Z);
         }
 
         /// <summary>
@@ -341,7 +337,7 @@ namespace Human
                 throw new FileNotFoundException("file no found", asf_filename);
             }
 
-            m_pBoneList = new List<Bone>(20);
+            m_pBoneList = new List<TreeNode<Bone>>(20);
             int[] dofo = new int[8];
             dofo[0] = 4;
             dofo[1] = 5;
@@ -355,8 +351,8 @@ namespace Human
             root.dofo = dofo;
             //Initialization
             root.idx = rootBoneIndex;
-            root.parent = null;
-            root.child = null;
+            //root.parent = null;
+            //root.child = null;
             Vector3D dir = new Vector3D(0d, 0d, 0d);
             root.dir = dir;
             root.angle_x = 0d; root.angle_y = 0d; root.angle_z = 0d;
@@ -367,7 +363,7 @@ namespace Human
             root.doftl = false;
             //m_RootPos[0] = m_RootPos[1] = m_RootPos[2] = 0;
             root.name = "root";
-            m_pBoneList.Add(root);
+            m_pBoneList.Add(new TreeNode<Bone>(root));
             //	m_NumDOFs=6;
             //tx = ty = tz = rx = ry = rz = 0.0;
             // build hierarchy and read in each bone's DOF information
@@ -385,12 +381,12 @@ namespace Human
         protected int m_NumFrames;
         Skeleton pSkeleton;
         public List<Posture> m_pPostures;
-        
+
         public int MOV_BONES { get; private set; }
         protected void readAMCfile(string AMCname, float scale)
         {
-            List<Bone> bone;
-            bone = pSkeleton.m_pBoneList;
+
+            var bone = pSkeleton.m_pBoneList;
             int n = 0;
             int numbones = pSkeleton.m_pBoneList.Count;
             int movbones = numbones - 2;
@@ -424,17 +420,17 @@ namespace Human
                 for (int j = 0; j < movbones; j++)
                 {
                     var line = f.ReadLine().Split();
-                    int bone_idx = pSkeleton.m_pBoneList.FindIndex(b => b.name == line[0]);
-                    if (i==0)
-                        Posture.m_pBone.Add( pSkeleton.m_pBoneList[bone_idx]);
+                    int bone_idx = pSkeleton.m_pBoneList.FindIndex(b => b.data.name == line[0]);
+                    if (i == 0)
+                        pSkeleton.m_pBoneList[bone_idx].data.frame_idx = j;
                     pose.bone_rotation[bone_idx].X = pose.bone_rotation[bone_idx].Y = pose.bone_rotation[bone_idx].Z = 0;
-                    for (int x = 0; x < pSkeleton.m_pBoneList[bone_idx].dof; x++)
+                    for (int x = 0; x < pSkeleton.m_pBoneList[bone_idx].data.dof; x++)
                     {
                         float tmp = float.Parse(line[x + 1]);
-                        switch (bone[bone_idx].dofo[x])
+                        switch (bone[bone_idx].data.dofo[x])
                         {
                             case 0:
-                                x = bone[bone_idx].dof;
+                                x = bone[bone_idx].data.dof;
                                 break;
                             case 1:
                                 pose.bone_rotation[bone_idx].X = tmp;
